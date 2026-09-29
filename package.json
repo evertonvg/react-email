@@ -7,7 +7,8 @@
   "scripts": {
     "build": "node scripts/build.js",
     "package": "node scripts/build.js --zip",
-    "dev": "node scripts/build.js --watch --serve"
+    "dev": "node scripts/build.js --watch --serve",
+    "generate": "node scripts/generate.js"
   },
   "devDependencies": {
     "archiver": "^8.0.0",

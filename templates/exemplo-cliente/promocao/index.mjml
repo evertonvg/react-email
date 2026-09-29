@@ -1,0 +1,27 @@
+<mjml lang="pt-BR">
+  <mj-head>
+    <mj-title>Promoção de outubro</mj-title>
+    <mj-preview>Até 50% de desconto só esta semana</mj-preview>
+    <mj-include path="@components/estilos.mjml" />
+  </mj-head>
+  <mj-body background-color="#f4f4f4" width="600px">
+    <mj-include path="@components/header.mjml" />
+
+    <mj-section background-color="#e60000" padding="48px 24px">
+      <mj-column>
+        <mj-text mj-class="titulo" align="center" color="#ffffff">50% OFF</mj-text>
+        <mj-text align="center" color="#ffffff">Só até domingo</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text>Olá, Maria!</mj-text>
+        <mj-text>Separamos ofertas especiais para você. Aproveite antes que acabe!</mj-text>
+        <mj-button href="https://exemplo.com/ofertas" background-color="#e60000">Ver ofertas</mj-button>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="@components/footer.mjml" />
+  </mj-body>
+</mjml>

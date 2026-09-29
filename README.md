@@ -26,6 +26,8 @@ Acesse **http://localhost:3000**. A página inicial lista os templates, e ao sal
 | `npm run dev` | Compila tudo, observa `templates/` e `components/`, serve em `localhost:3000` com live reload |
 | `npm run build` | Compila todos os templates para `dist/` (mesma estrutura de `templates/`) |
 | `npm run package` | Compila tudo e gera um `.zip` por template |
+| `npm run generate` | Gera um template a partir de um modelo em `fill-templates/` (veja [Modelos com variáveis](#modelos-com-variáveis)) |
+| `npm run generate -- promocao --force` | Gera direto a partir do modelo informado, sobrescrevendo o destino |
 | `node scripts/build.js cliente-x/black-friday` | Compila só um template (aceita vários) |
 | `node scripts/build.js cliente-x` | Compila todos os templates de um cliente |
 | `node scripts/build.js cliente-x --zip` | Compila e empacota os templates do cliente |
@@ -38,6 +40,11 @@ Acesse **http://localhost:3000**. A página inicial lista os templates, e ao sal
 │   ├── estilos.mjml       # <mj-attributes>: fontes, cores, classes
 │   ├── header.mjml
 │   └── footer.mjml
+├── fill-templates/        # modelos com variáveis (npm run generate)
+│   └── <modelo>/
+│       ├── index.mjml     # usa {{ variaveis }}
+│       ├── variables.json # valores + destino ("output")
+│       └── images/
 ├── templates/
 │   ├── exemplo/           # template de exemplo
 │   └── <cliente>/         # pasta agrupadora por cliente
@@ -46,7 +53,8 @@ Acesse **http://localhost:3000**. A página inicial lista os templates, e ao sal
 │           └── images/    # imagens usadas por este e-mail (aceita subpastas)
 ├── scripts/
 │   ├── build.js           # compila, copia imagens, gera zip, watch
-│   └── serve.js           # servidor local com live reload
+│   ├── serve.js           # servidor local com live reload
+│   └── generate.js        # gera templates/ a partir de fill-templates/
 └── dist/                  # saída gerada (ignorada no git), espelha templates/
     └── <cliente>/
         ├── <campanha>/index.html
@@ -93,6 +101,39 @@ Estrutura mínima de um template:
 ```
 
 Layout em MJML: `mj-section` (linha) → `mj-column` (colunas lado a lado no desktop, empilhadas no celular) → conteúdo (`mj-text`, `mj-image`, `mj-button`, `mj-divider`, `mj-spacer`…). Referência completa dos componentes: https://documentation.mjml.io
+
+## Modelos com variáveis
+
+Para e-mails que se repetem com conteúdo diferente, crie um **modelo** em `fill-templates/<modelo>/`: um template normal (`index.mjml` + `images/`) com variáveis `{{ nome }}` e um `variables.json` com os valores.
+
+```xml
+<mj-text>Olá, {{ cliente.nome }}!</mj-text>
+<mj-button href="{{ cta.link }}" background-color="{{ cores.principal }}">{{ cta.texto }}</mj-button>
+```
+
+```json
+{
+  "output": "cliente-x/promo-outubro",
+  "cliente": { "nome": "Maria" },
+  "cores": { "principal": "#e60000" },
+  "cta": { "texto": "Ver ofertas", "link": "https://exemplo.com/ofertas" }
+}
+```
+
+Depois rode `npm run generate`, escolha o modelo, e o resultado é gravado em `templates/<output>/` e compilado.
+
+Regras:
+
+- **Variável usada no `.mjml` e ausente no JSON faz o comando falhar**, mostrando arquivo e linha, e nada é gerado. O mesmo vale para uma variável que aponta para um objeto em vez de um valor.
+- Variáveis do JSON não usadas no `.mjml` só geram um aviso.
+- `"output"` é o destino dentro de `templates/`. Se faltar, o comando pergunta. Ele não pode ser a pasta de um cliente nem ficar dentro de outro template.
+- Se o destino já existir, o comando pergunta antes de sobrescrever (ou use `--force`).
+- Os valores entram como estão, então aceitam HTML simples (`<br>`, `<strong>`).
+- Todos os `.mjml` da pasta do modelo são processados; imagens e outros arquivos são copiados. O `variables.json` não vai para o template gerado.
+- Nome da variável: letras, números, `_`, `-` e `.` para acessar níveis do JSON (`{{ cta.link }}`).
+- Não coloque `{{ ... }}` em comentários do modelo: também é tratado como variável.
+- O build também falha se encontrar `{{ ... }}` sobrando num template de `templates/` (ex.: modelo copiado manualmente em vez de gerado).
+- O `npm run dev` observa `templates/`, não `fill-templates/`: depois de editar o modelo ou o JSON, rode `npm run generate -- <modelo> --force` de novo.
 
 ## Estilos
 

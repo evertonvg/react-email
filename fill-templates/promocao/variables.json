@@ -1,0 +1,18 @@
+{
+  "output": "exemplo-cliente/promocao",
+  "assunto": "Promoção de outubro",
+  "preview": "Até 50% de desconto só esta semana",
+  "titulo": "50% OFF",
+  "subtitulo": "Só até domingo",
+  "texto": "Separamos ofertas especiais para você. Aproveite antes que acabe!",
+  "cliente": {
+    "nome": "Maria"
+  },
+  "cores": {
+    "principal": "#e60000"
+  },
+  "cta": {
+    "texto": "Ver ofertas",
+    "link": "https://exemplo.com/ofertas"
+  }
+}

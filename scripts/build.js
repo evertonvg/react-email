@@ -78,6 +78,14 @@ async function buildTemplate(name) {
   const outDir = path.join(DIST_DIR, name);
 
   const source = fs.readFileSync(path.join(srcDir, "index.mjml"), "utf8");
+
+  // {{ variavel }} sobrando = modelo de fill-templates/ copiado sem passar pelo npm run generate
+  const leftover = source
+    .split("\n")
+    .flatMap((line, i) => [...line.matchAll(/\{\{\s*([\w.-]+)\s*\}\}/g)].map((m) => `linha ${i + 1}: {{ ${m[1]} }}`));
+  if (leftover.length) {
+    throw new Error(`variáveis não substituídas (use npm run generate):\n    ${leftover.join("\n    ")}`);
+  }
   const { html, errors } = await mjml2html(source, {
     filePath: path.join(srcDir, "index.mjml"), // permite <mj-include> relativo
     ignoreIncludes: false, // MJML 5 desliga includes por padrão

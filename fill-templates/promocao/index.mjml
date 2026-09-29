@@ -1,0 +1,27 @@
+<mjml lang="pt-BR">
+  <mj-head>
+    <mj-title>{{ assunto }}</mj-title>
+    <mj-preview>{{ preview }}</mj-preview>
+    <mj-include path="@components/estilos.mjml" />
+  </mj-head>
+  <mj-body background-color="#f4f4f4" width="600px">
+    <mj-include path="@components/header.mjml" />
+
+    <mj-section background-color="{{ cores.principal }}" padding="48px 24px">
+      <mj-column>
+        <mj-text mj-class="titulo" align="center" color="#ffffff">{{ titulo }}</mj-text>
+        <mj-text align="center" color="#ffffff">{{ subtitulo }}</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text>Olá, {{ cliente.nome }}!</mj-text>
+        <mj-text>{{ texto }}</mj-text>
+        <mj-button href="{{ cta.link }}" background-color="{{ cores.principal }}">{{ cta.texto }}</mj-button>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="@components/footer.mjml" />
+  </mj-body>
+</mjml>
