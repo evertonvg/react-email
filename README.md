@@ -24,11 +24,12 @@ Acesse **http://localhost:3000**. A página inicial lista os templates, e ao sal
 | Comando | O que faz |
 |---|---|
 | `npm run dev` | Compila tudo, observa `templates/` e `components/`, serve em `localhost:3000` com live reload |
-| `npm run build` | Compila todos os templates para `dist/<nome>/` |
-| `npm run package` | Compila e gera `dist/<nome>.zip` para entrega |
-| `node scripts/build.js <nome>` | Compila só um template (aceita vários nomes) |
-| `node scripts/build.js <nome> --zip` | Compila e empacota só um template |
-| `node scripts/build.js --zip --cdn=https://cdn.exemplo.com/emails` | Troca `images/...` por URLs absolutas (`<cdn>/<nome>/images/...`) |
+| `npm run build` | Compila todos os templates para `dist/` (mesma estrutura de `templates/`) |
+| `npm run package` | Compila tudo e gera um `.zip` por template |
+| `node scripts/build.js cliente-x/black-friday` | Compila só um template (aceita vários) |
+| `node scripts/build.js cliente-x` | Compila todos os templates de um cliente |
+| `node scripts/build.js cliente-x --zip` | Compila e empacota os templates do cliente |
+| `node scripts/build.js --zip --cdn=https://cdn.exemplo.com/emails` | Troca `images/...` por URLs absolutas (`<cdn>/<caminho-do-template>/images/...`) |
 
 ## Estrutura
 
@@ -38,24 +39,33 @@ Acesse **http://localhost:3000**. A página inicial lista os templates, e ao sal
 │   ├── header.mjml
 │   └── footer.mjml
 ├── templates/
-│   └── <nome>/            # um e-mail por pasta
-│       ├── index.mjml     # fonte do e-mail
-│       └── images/        # imagens usadas por este e-mail
+│   ├── exemplo/           # template de exemplo
+│   └── <cliente>/         # pasta agrupadora por cliente
+│       └── <campanha>/    # um e-mail por pasta
+│           ├── index.mjml # fonte do e-mail
+│           └── images/    # imagens usadas por este e-mail (aceita subpastas)
 ├── scripts/
 │   ├── build.js           # compila, copia imagens, gera zip, watch
 │   └── serve.js           # servidor local com live reload
-└── dist/                  # saída gerada (ignorada no git)
-    ├── <nome>/index.html
-    ├── <nome>/images/
-    └── <nome>.zip
+└── dist/                  # saída gerada (ignorada no git), espelha templates/
+    └── <cliente>/
+        ├── <campanha>/index.html
+        ├── <campanha>/images/
+        └── <campanha>.zip
 ```
 
 ## Criando um novo e-mail
 
-1. Crie `templates/<nome>/index.mjml` (copie o `templates/exemplo/` como ponto de partida).
-2. Coloque as imagens em `templates/<nome>/images/`.
-3. Rode `npm run dev` e acompanhe em `http://localhost:3000/<nome>/`.
-4. Quando estiver pronto: `node scripts/build.js <nome> --zip` e envie o `dist/<nome>.zip` ao cliente.
+1. Crie `templates/<cliente>/<campanha>/index.mjml` (copie o `templates/exemplo/` como ponto de partida).
+2. Coloque as imagens em `templates/<cliente>/<campanha>/images/`.
+3. Rode `npm run dev` e acompanhe em `http://localhost:3000/<cliente>/<campanha>/`.
+4. Quando estiver pronto: `node scripts/build.js <cliente>/<campanha> --zip` e envie o `dist/<cliente>/<campanha>.zip` ao cliente.
+
+### Organização por cliente
+
+Qualquer pasta que tenha um `index.mjml` é um template. Pastas sem ele são agrupadoras e o build procura dentro delas, em qualquer profundidade (`cliente-x/2026/black-friday` também funciona). Não coloque um `index.mjml` na pasta do cliente, senão ela vira um template e as subpastas deixam de ser procuradas.
+
+No servidor de desenvolvimento, `http://localhost:3000/` lista todos os templates agrupados por cliente, e `http://localhost:3000/<cliente>/` lista só os daquele cliente.
 
 Estrutura mínima de um template:
 
@@ -129,25 +139,25 @@ Observações:
 
 - `mj-include` **não aceita parâmetros**: o arquivo é copiado como está. Use-o para partes fixas (header, footer, estilos).
 - Um componente pode ser só o trecho (`<mj-section>...`) ou vir envolto em `<mjml><mj-body>...</mj-body></mjml>`. Para incluir estilos no `<head>`, envolva em `<mjml><mj-head>...</mj-head></mjml>`.
-- Imagens dentro de componentes usam caminho relativo **ao template**, não ao componente (`src="images/logo.png"` → `templates/<nome>/images/logo.png`).
+- Imagens dentro de componentes usam caminho relativo **ao template**, não ao componente (`src="images/logo.png"` → `templates/<cliente>/<campanha>/images/logo.png`).
 - Por segurança, só é permitido incluir arquivos de `templates/` e `components/`. Includes fora disso são bloqueados e o build mostra um aviso.
 
 ## Imagens
 
-- Use `src="images/arquivo.png"`: o build copia `templates/<nome>/images/` para `dist/` e para o zip.
+- Use `src="images/arquivo.png"`: o build copia a pasta `images/` do template (com subpastas) para `dist/` e para o zip.
 - Sempre preencha `alt`: muitos clientes bloqueiam imagens por padrão.
 - Exporte em ~2x a largura exibida (ex.: 1200px para 600px) para ficar nítido em telas retina, mas mantenha cada imagem idealmente abaixo de ~100 KB.
 - Se a plataforma do cliente não hospedar as imagens do zip, suba-as num CDN e gere com `--cdn=<url>`.
 
 ## Como o build funciona
 
-`scripts/build.js`, para cada `templates/<nome>/index.mjml`:
+`scripts/build.js` procura todas as pastas com `index.mjml` dentro de `templates/` e, para cada uma:
 
 1. Resolve os aliases de `mj-include` e compila com o MJML.
 2. Mostra avisos de validação (atributos inválidos, includes bloqueados, alias desconhecido).
-3. Grava `dist/<nome>/index.html` e copia `images/` (arquivos ocultos como `.gitkeep` são ignorados).
+3. Grava `dist/<caminho>/index.html` e copia `images/` (arquivos ocultos como `.gitkeep` são ignorados).
 4. Com `--cdn`, reescreve `src`/`href`/`background` que começam com `images/`.
-5. Com `--zip`, gera `dist/<nome>.zip` com `index.html` e `images/` na raiz.
+5. Com `--zip`, gera `dist/<caminho>.zip` com `index.html` e `images/` na raiz.
 
 No `npm run dev`, `scripts/serve.js` serve a pasta `dist/` e injeta um pequeno script de live reload **somente na resposta do servidor**. O `index.html` gerado e o zip não contêm esse script.
 

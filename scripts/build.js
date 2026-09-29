@@ -4,7 +4,8 @@
 // Uso:
 //   node scripts/build.js [nome...] [--zip] [--cdn=https://cdn.exemplo.com/pasta] [--watch] [--serve]
 //
-//   nome     compila só os templates informados (padrão: todos)
+//   nome     compila só os templates informados (padrão: todos). Aceita o caminho
+//            completo (cliente-x/black-friday) ou só a pasta do cliente (cliente-x)
 //   --zip    gera o pacote zip de cada template
 //   --cdn    troca "images/..." por URL absoluta (para plataformas que não hospedam imagens)
 //   --watch  recompila ao salvar qualquer arquivo em templates/ ou components/
@@ -50,15 +51,26 @@ const flags = {
 };
 const only = args.filter((a) => !a.startsWith("--"));
 
-function listTemplates() {
-  const all = fs
-    .readdirSync(TEMPLATES_DIR, { withFileTypes: true })
-    .filter((d) => d.isDirectory() && fs.existsSync(path.join(TEMPLATES_DIR, d.name, "index.mjml")))
-    .map((d) => d.name);
+// Uma pasta com index.mjml é um template; sem ele, é agrupadora (ex.: cliente) e
+// a busca desce nela. Nomes são caminhos relativos: "cliente-x/black-friday".
+function findTemplates(dir = TEMPLATES_DIR, prefix = "") {
+  if (prefix && fs.existsSync(path.join(dir, "index.mjml"))) return [prefix];
+  return fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((d) => d.isDirectory() && !d.name.startsWith(".") && d.name !== "images")
+    .flatMap((d) => findTemplates(path.join(dir, d.name), prefix ? `${prefix}/${d.name}` : d.name))
+    .sort();
+}
 
-  const missing = only.filter((n) => !all.includes(n));
+// Filtro aceita o nome exato ou uma pasta agrupadora: "cliente-x" compila todos dele.
+function listTemplates() {
+  const all = findTemplates();
+  if (!only.length) return all;
+
+  const filters = only.map((n) => n.replace(/^templates\//, "").replace(/\/+$/, ""));
+  const missing = filters.filter((f) => !all.some((t) => t === f || t.startsWith(`${f}/`)));
   if (missing.length) throw new Error(`Template não encontrado: ${missing.join(", ")}`);
-  return only.length ? only : all;
+  return all.filter((t) => filters.some((f) => t === f || t.startsWith(`${f}/`)));
 }
 
 async function buildTemplate(name) {
@@ -95,7 +107,7 @@ async function buildTemplate(name) {
     });
   }
 
-  if (flags.zip) await zipDir(outDir, path.join(DIST_DIR, `${name}.zip`));
+  if (flags.zip) await zipDir(outDir, `${outDir}.zip`);
 
   console.log(`✔ ${name}${flags.zip ? ` → dist/${name}.zip` : ""}`);
 }
