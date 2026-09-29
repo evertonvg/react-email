@@ -1,0 +1,19 @@
+{
+  "name": "email-marketing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Templates de e-mail marketing em MJML, entregues como pacotes zip",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "package": "node scripts/build.js --zip",
+    "dev": "node scripts/build.js --watch --serve"
+  },
+  "devDependencies": {
+    "archiver": "^8.0.0",
+    "mjml": "^5.4.1"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

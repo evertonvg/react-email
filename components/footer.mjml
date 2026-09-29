@@ -1,0 +1,12 @@
+<mjml>
+  <mj-body>
+    <mj-section padding="24px">
+      <mj-column>
+        <mj-text align="center" font-size="12px" line-height="18px" color="#888888">
+          Empresa Ltda · Endereço, Cidade - UF<br />
+          <a href="#" style="color:#888888">Descadastrar</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

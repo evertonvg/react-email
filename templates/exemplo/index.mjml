@@ -1,0 +1,56 @@
+<mjml lang="pt-BR">
+  <mj-head>
+    <mj-title>Exemplo de e-mail</mj-title>
+    <mj-preview>Texto que aparece na prévia da caixa de entrada</mj-preview>
+    <mj-include path="@components/estilos.mjml" />
+  </mj-head>
+  <mj-body background-color="#f4f4f4" width="600px">
+    <mj-include path="@components/header.mjml" />
+
+    <!-- Imagem: caminho relativo ao template (templates/exemplo/images/urna.png) -->
+    <mj-section background-color="#ffffff" padding="0">
+      <mj-column>
+        <mj-image
+          src="images/urna.png"
+          alt="Urna eletrônica exibindo Comprovante Eleitoral"
+          width="600px"
+          padding="0"
+          href="https://exemplo.com"
+        />
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#0066cc" padding="48px 24px">
+      <mj-column>
+        <mj-text mj-class="titulo" align="center" color="#ffffff">
+          Título principal da campanha
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <!-- Conteúdo -->
+    <mj-section background-color="#ffffff" padding="32px 24px">
+      <mj-column>
+        <mj-text>
+          Olá! Este é um template de exemplo em MJML. Ele compila para HTML com tabelas e estilos inline,
+          compatível com Outlook, Gmail, Apple Mail e as principais plataformas de disparo.
+        </mj-text>
+        <mj-button href="https://exemplo.com">Chamada para ação</mj-button>
+      </mj-column>
+    </mj-section>
+
+    <!-- Duas colunas (empilham no celular) -->
+    <mj-section background-color="#ffffff" padding="0 24px 32px">
+      <mj-column>
+        <mj-text font-weight="bold">Benefício 1</mj-text>
+        <mj-text padding-top="0">Descrição curta do benefício.</mj-text>
+      </mj-column>
+      <mj-column>
+        <mj-text font-weight="bold">Benefício 2</mj-text>
+        <mj-text padding-top="0">Descrição curta do benefício.</mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-include path="@components/footer.mjml" />
+  </mj-body>
+</mjml>

@@ -1,0 +1,10 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif" />
+      <mj-text font-size="16px" line-height="24px" color="#333333" />
+      <mj-button background-color="#0066cc" color="#ffffff" font-size="16px" border-radius="4px" />
+      <mj-class name="titulo" font-size="28px" line-height="36px" font-weight="bold" />
+    </mj-attributes>
+  </mj-head>
+</mjml>

@@ -1,0 +1,10 @@
+<mjml>
+  <mj-body>
+    <mj-section background-color="#ffffff" padding="24px">
+      <mj-column>
+        <!-- Troque por <mj-image src="images/logo.png" width="150px" /> com o logo na pasta images/ do template -->
+        <mj-text align="center" font-size="24px" font-weight="bold">LOGO</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
